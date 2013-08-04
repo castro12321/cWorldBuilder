@@ -1,0 +1,7 @@
+name: cWorldBuilder
+main: castro.builder.CWorldBuilder
+version: 1.0.0
+depend: [CPlugin]
+commands:
+  cwb:
+    description: Ustawia flagi do obslugi worldedit i voxela
