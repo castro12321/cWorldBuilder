@@ -29,10 +29,10 @@ public class BlockQueue
 	//public Queue<CBlock> queue = new LinkedList<>();
 	public Queue<CBlock> queue = new ArrayDeque<CBlock>(50000);
 	
-	Player player;
-	boolean omitAir  = false;
-	boolean omitLog  = false;
-	boolean omitPerm = false;
+	public Player player;
+	public boolean omitAir  = false;
+	public boolean omitLog  = false;
+	public boolean omitPerm = false;
 	
 	public BlockQueue(Player player)
 	{

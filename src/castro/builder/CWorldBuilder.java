@@ -44,9 +44,9 @@ public class CWorldBuilder extends CPlugin implements Runnable
 	public static Player executePlayer; // current player while executing run()
 	public static HashMap<String, CWBPlayer> players = new HashMap<>();
 	
-	private static Queue<BlockQueue>  queues = new ArrayDeque<BlockQueue>();
-	private static Queue<BlockQueue> lqueues = new ArrayDeque<BlockQueue>();
-	private static BlockQueue lastQueue; // for adding
+	public static Queue<BlockQueue>  queues = new ArrayDeque<BlockQueue>();
+	public static Queue<BlockQueue> lqueues = new ArrayDeque<BlockQueue>();
+	public static BlockQueue lastQueue; // for adding
 	
 	
 	private static boolean eq(Player p1, Player p2) { return p1.getName().equals(p2.getName()); }
