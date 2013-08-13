@@ -221,6 +221,8 @@ public class CWorldBuilder extends CPlugin implements Runnable
 	@Override
 	protected CPluginSettings getSettings()
 	{
+		instance = this;
+		
 		CPluginSettings settings = new CPluginSettings();
 		settings.commandMgr = new CommandMgr();
 		return settings;
@@ -230,7 +232,6 @@ public class CWorldBuilder extends CPlugin implements Runnable
 	@Override
 	protected void init()
 	{
-		instance = this;
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, this, 1, 1); // schedule run to run every tick
 	}
 	
