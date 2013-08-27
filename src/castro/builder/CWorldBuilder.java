@@ -59,7 +59,7 @@ public class CWorldBuilder extends CPlugin implements Runnable
 		for(BlockQueue q :  queues) if(eq(q.player, p)) { if(message) sendMsg(p); return false; }
 		for(BlockQueue q : lqueues) if(eq(q.player, p)) { if(message) sendMsg(p); return false; }
 		
-		loadChunksForWorld(p.getWorld().getName());
+		CWBWorlds.loadChunksForWorld(p.getWorld().getName());
 		
 		commandPlayer = p;
 		commandWorld  = p.getWorld();
@@ -102,43 +102,6 @@ public class CWorldBuilder extends CPlugin implements Runnable
 	}
 	
 	
-	public static HashMap<String, boolean[][]> lockedChunksWorlds = new HashMap<>();
-	public static boolean[][] lockedChunks = new boolean[50][50];
-	private static void loadChunksForWorld(String wname)
-	{
-		if(lockedChunksWorlds.containsKey(wname))
-			lockedChunks = lockedChunksWorlds.get(wname);
-		else
-		{
-			lockedChunks = new boolean[50][50];
-			lockedChunksWorlds.put(wname, lockedChunks);
-		}
-	}
-	
-	public static boolean isLocked(World world, int x, int z)
-	{
-		try { return lockedChunks[x][z]; } catch(ArrayIndexOutOfBoundsException e) { return false; }
-	}
-	
-	private static boolean loadChunk(Block block) { return loadChunk(block.getWorld(), block.getX() >> 4, block.getZ() >> 4); }
-	public static boolean loadChunk(World world, int x, int z)
-	{
-		if(isLocked(world, x, z))
-			return false;
-		
-		if (!world.isChunkLoaded(x, z)) // Try to load the chunk
-		{
-			world.loadChunk(x, z);
-			if(!world.isChunkLoaded(x, z)) // If chunk is still not loaded, add to limited chunks in order not to load it again
-			{
-				try { lockedChunks[x][z] = true; } catch(IndexOutOfBoundsException e) {}
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	
 	@Override
 	public void run()
 	{
@@ -174,7 +137,7 @@ public class CWorldBuilder extends CPlugin implements Runnable
 			return false;
 		
 		BlockQueue queue = currentQueues.peek();
-		loadChunksForWorld(queue.player.getWorld().getName());
+		CWBWorlds.loadChunksForWorld(queue.player.getWorld().getName());
 		executePlayer = queue.player;
 		try
 		{
@@ -183,7 +146,7 @@ public class CWorldBuilder extends CPlugin implements Runnable
 				CBlock block = queue.queue.remove();
 				Block b = block.getBlock();
 				
-				if(!loadChunk(b))
+				if(!CWBWorlds.loadChunk(b))
 					continue;
 				
 				if(!queue.omitPerm)
