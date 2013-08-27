@@ -82,7 +82,10 @@ public class CWBWorlds implements Listener
 	{
 		cWorld = worlds.get(worldname);
 		if(cWorld == null)
-			worlds.put(worldname, new CWBWorld());
+		{
+			cWorld = new CWBWorld();
+			worlds.put(worldname, cWorld);
+		}
 	}
 	
 	
