@@ -29,17 +29,17 @@ public class BlockBase extends CBlock
 {
 	BaseBlock baseBlock;
 	
-	public BlockBase(BaseBlock baseBlock)
+	public BlockBase(Location loc, BaseBlock baseBlock)
 	{
+		super(loc, -1);
 		this.baseBlock = baseBlock;
 	}
 	
 	@Override
-	public void execute(Location location)
+	public void execute(Block block)
 	{
-		Block block = location.getBlock();
 		block.setTypeIdAndData(baseBlock.getId(), (byte)baseBlock.getData(), false);
-		block = location.getBlock();
+		block = getBlock();
 		
 		if (baseBlock instanceof SignBlock)
 		{
@@ -55,24 +55,5 @@ public class BlockBase extends CBlock
 			return;
 		}
 		//if(block instanceof Furnace) ... Moze kiedys to zrobie :D
-	}
-
-	@Override
-	public int hashCode()
-	{
-		return getHash(baseBlock.getType(), (byte)baseBlock.getData());
-	}
-
-	@Override
-	public boolean equals(Object o)
-	{
-		return baseBlock.equals(o);
-	}
-	
-	
-	@Override
-	protected CBlock clone()
-	{
-		return null;
 	}
 }

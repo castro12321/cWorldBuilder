@@ -18,23 +18,40 @@
 package castro.blocks;
 
 import org.bukkit.Location;
+import org.bukkit.block.Block;
+
+import castro.builder.CWorldBuilder;
+import castro.connector.CConnector;
 
 public abstract class CBlock
-{	
-	public abstract void execute(Location location);
-	public abstract int hashCode();
-	public abstract boolean equals(Object o);
+{
+	public Location loc;
+	public int id;
 	
-	protected abstract CBlock clone();
-	
-	public CBlock getCloned()
+	public CBlock(Location loc, int id)
 	{
-		return clone();
+		this.loc = loc;
+		this.id = id;
 	}
 	
 	
-	protected int getHash(int id, byte data)
+	public abstract void execute(Block block);
+	
+	
+	public boolean canBuild(Block block)
 	{
-		return id*255 + data;
+		return CConnector.worldguard.canBuild(CWorldBuilder.executePlayer, block);
+	}
+	
+	
+	public Block getBlock()
+	{
+		return loc.getWorld().getBlockAt(loc);
+	}
+	
+	
+	public int getId()
+	{
+		return id;
 	}
 }
