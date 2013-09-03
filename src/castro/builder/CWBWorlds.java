@@ -19,6 +19,8 @@ package castro.builder;
 
 import java.util.HashMap;
 
+import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
@@ -97,7 +99,15 @@ public class CWBWorlds implements Listener
 	
 	public static boolean loadChunk(Block block)
 	{
-		return loadChunk(block.getWorld(), block.getX() >> 4, block.getZ() >> 4);
+		return loadChunk(block.getChunk());
+	}
+	public static boolean loadChunk(Location location)
+	{
+		return loadChunk(location.getChunk());
+	}
+	public static boolean loadChunk(Chunk chunk)
+	{
+		return loadChunk(chunk.getWorld(), chunk.getX(), chunk.getZ());
 	}
 	public static boolean loadChunk(World world, int x, int z)
 	{

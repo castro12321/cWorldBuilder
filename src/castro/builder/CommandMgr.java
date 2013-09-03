@@ -52,18 +52,16 @@ public class CommandMgr implements GenericCommandMgr
 					return true;
 				}
 			
-			if(arg.equals("-d")) player.omitAir = player.omitLog = player.omitPerm = false;
-			if(arg.equals("-a")) player.omitAir = true;
+			if(arg.equals("-d")) player.omitLog = player.omitPerm = false;
 			
 			if(sender.hasPermission("aliquam.mod"))
-			{
+			{	
 				if(arg.equals("-l")) player.omitLog  = true;
 				if(arg.equals("-p")) player.omitPerm = true;
 			}
 		}
 		
 		plugin.sendMessage(sender, "Twoje obecne flagi to:");
-		plugin.sendMessage(sender, "-a = " + player.omitAir);
 		plugin.sendMessage(sender, "-l = " + player.omitLog);
 		plugin.sendMessage(sender, "-p = " + player.omitPerm);
 		

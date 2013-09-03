@@ -19,17 +19,14 @@ package castro.builder;
 
 import java.util.ArrayDeque;
 import java.util.HashMap;
-import java.util.NoSuchElementException;
 import java.util.Queue;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import castro.base.plugin.CPlugin;
 import castro.base.plugin.CPluginSettings;
-import castro.blocks.CBlock;
 
 import com.sk89q.worldedit.Vector;
 
@@ -41,7 +38,6 @@ public class CWorldBuilder extends CPlugin implements Runnable
 	public static Player commandPlayer;
 	public static World  commandWorld;
 	
-	public static Player executePlayer; // current player while executing run()
 	public static HashMap<String, CWBPlayer> players = new HashMap<>();
 	
 	public static Queue<BlockQueue>  queues = new ArrayDeque<BlockQueue>();
@@ -68,26 +64,14 @@ public class CWorldBuilder extends CPlugin implements Runnable
 	}
 	
 	
-	public static void addBlock(CBlock b)
-	{
-		if(lastQueue == null)
-			return;
-		
-		if(b.getId() == 0)
-			if(lastQueue.omitAir)
-				return;
-		lastQueue.queue.add(b);
-	}
-	
-	
 	public static void flush()
 	{
 		// Add last queue to appropriate queues list
 		if(lastQueue == null)
 			return;
 		
-		if(lastQueue.queue.size() > 0)
-			if(lastQueue.queue.size() > 50000)
+		if(lastQueue.size() > 0)
+			if(lastQueue.size() > 50000)
 				lqueues.add(lastQueue);
 			else
 				queues.add(lastQueue);
@@ -105,18 +89,14 @@ public class CWorldBuilder extends CPlugin implements Runnable
 	@Override
 	public void run()
 	{
-		//run_impl();
-		/**/
-		long start = System.currentTimeMillis();	
+		Queue<BlockQueue> currentQueues = getNextQueues();
+		if(currentQueues == null)
+			return;
 		
-		while(System.currentTimeMillis() - start < 15)
-		{
-			//reset();
-			if(!run_impl())
-				return;
-			//timeStep("100 blocks");
-		}
-		/**/
+		BlockQueue queue = currentQueues.peek();
+		queue.run();
+		if(queue.isEmpty())
+			currentQueues.remove();
 	}
 	
 	
@@ -128,50 +108,6 @@ public class CWorldBuilder extends CPlugin implements Runnable
 			else
 				return lqueues;
 		return queues;
-	}
-	
-	private boolean run_impl()
-	{
-		Queue<BlockQueue> currentQueues = getNextQueues();
-		if(currentQueues == null)
-			return false;
-		
-		BlockQueue queue = currentQueues.peek();
-		CWBWorlds.loadChunksForWorld(queue.player.getWorld().getName());
-		executePlayer = queue.player;
-		try
-		{
-			for(int i = 0; i < 100; ++i)
-			{
-				CBlock block = queue.queue.remove();
-				Block b = block.getBlock();
-				
-				if(!CWBWorlds.loadChunk(b))
-					continue;
-				
-				if(!queue.omitPerm)
-					if(!block.canBuild(b))
-						continue;
-				
-				block.execute(b);
-				/** TEMPORARY REMOVED LOGGING
-				if(queue.omitLog)
-					block.execute(b);
-				else
-				{
-					BlockState before = b.getState();
-					block.execute(b);
-					BlockState after = b.getState();
-					CConnector.registerChange(executePlayer, before, after);
-				}
-				*/
-			}
-		} catch(NoSuchElementException e) {}
-		
-		if(queue.queue.isEmpty())
-			currentQueues.remove();
-		
-		return true;
 	}
 	
 	

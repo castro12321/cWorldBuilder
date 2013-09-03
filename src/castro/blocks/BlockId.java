@@ -18,18 +18,41 @@
 package castro.blocks;
 
 import org.bukkit.Location;
-import org.bukkit.block.Block;
 
 public class BlockId extends CBlock
 {
-	public BlockId(Location loc, int id)
+	public int id;
+	
+	public BlockId(int id)
 	{
-		super(loc, id);
+		this.id = id;
 	}
 	
 	@Override
-	public void execute(Block block)
+	public void execute(Location location)
 	{
-		block.setTypeId(id, false);
+		location.getBlock().setTypeId(id, false);
+	}
+
+	
+	@Override
+	public int hashCode()
+	{
+		return id;
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if(o instanceof BlockId)
+			return id == ((BlockId)o).id;
+		return false;
+	}
+	
+	
+	@Override
+	protected CBlock clone()
+	{
+		return new BlockId(id);
 	}
 }

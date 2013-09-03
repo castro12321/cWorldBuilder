@@ -18,9 +18,6 @@
 package castro.blocks;
 
 import org.bukkit.Location;
-import org.bukkit.block.Block;
-
-import castro.builder.CWorldBuilder;
 
 import com.sk89q.worldedit.LocalEntity;
 import com.sk89q.worldedit.Vector;
@@ -32,14 +29,39 @@ public class BlockEntity extends CBlock
 	
 	public BlockEntity(LocalEntity entity, Vector pos)
 	{
-		super(new Location(CWorldBuilder.commandWorld, pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()), -1);
 		this.entity = entity;
 		this.pos = pos;
 	}
 	
 	@Override
-	public void execute(Block block)
+	public void execute(Location location)
 	{
 		entity.spawn(entity.getPosition().setPosition(pos));
+	}
+
+	
+	@Override
+	public int hashCode()
+	{
+		return pos.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if(o instanceof BlockEntity)
+		{
+			BlockEntity be = (BlockEntity)o;
+			return entity.equals(be.entity)
+				&& pos.equals(be.pos);
+		}
+		return false;
+	}
+	
+	
+	@Override
+	protected CBlock clone()
+	{
+		return null;
 	}
 }
