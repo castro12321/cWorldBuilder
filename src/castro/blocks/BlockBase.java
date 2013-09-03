@@ -39,10 +39,10 @@ public class BlockBase extends CBlock
 	public void execute(Block block)
 	{
 		block.setTypeIdAndData(baseBlock.getId(), (byte)baseBlock.getData(), false);
-		block = getBlock();
 		
 		if (baseBlock instanceof SignBlock)
 		{
+			block = getBlock();
 			String[] text = ((SignBlock)baseBlock).getText();
 			BlockState state = block.getState();
 			if (state == null || !(state instanceof Sign)) return;
