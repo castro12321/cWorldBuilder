@@ -30,8 +30,6 @@ public class BlockQueue
 	public Queue<CBlock> queue = new ArrayDeque<CBlock>(50000);
 	
 	public Player player;
-	public boolean omitAir  = false;
-	public boolean omitLog  = false;
 	public boolean omitPerm = false;
 	
 	public BlockQueue(Player player)
@@ -41,8 +39,6 @@ public class BlockQueue
 		CWBPlayer cplayer = CWorldBuilder.players.get(player.getName());
 		if(cplayer != null)
 		{
-			omitAir  = cplayer.omitAir;
-			omitLog  = cplayer.omitLog;
 			omitPerm = cplayer.omitPerm;
 		}
 	}

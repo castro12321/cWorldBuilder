@@ -73,9 +73,6 @@ public class CWorldBuilder extends CPlugin implements Runnable
 		if(lastQueue == null)
 			return;
 		
-		if(b.getId() == 0)
-			if(lastQueue.omitAir)
-				return;
 		lastQueue.queue.add(b);
 	}
 	
@@ -154,17 +151,6 @@ public class CWorldBuilder extends CPlugin implements Runnable
 						continue;
 				
 				block.execute(b);
-				/** TEMPORARY REMOVED LOGGING
-				if(queue.omitLog)
-					block.execute(b);
-				else
-				{
-					BlockState before = b.getState();
-					block.execute(b);
-					BlockState after = b.getState();
-					CConnector.registerChange(executePlayer, before, after);
-				}
-				*/
 			}
 		} catch(NoSuchElementException e) {}
 		

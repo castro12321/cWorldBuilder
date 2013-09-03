@@ -20,8 +20,6 @@ package castro.builder;
 public class CWBPlayer
 {
 	public String name;
-	public boolean omitAir;
-	public boolean omitLog;
 	public boolean omitPerm;
 	
 	public CWBPlayer(String name)
