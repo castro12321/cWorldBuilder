@@ -31,7 +31,7 @@ public class BlockBase extends CBlock
 	
 	public BlockBase(Location loc, BaseBlock baseBlock)
 	{
-		super(loc, -1);
+		super(loc);
 		this.baseBlock = baseBlock;
 	}
 	
@@ -40,6 +40,7 @@ public class BlockBase extends CBlock
 	{
 		block.setTypeIdAndData(baseBlock.getId(), (byte)baseBlock.getData(), false);
 		
+		// If it is special block, then we have to perform additional operations
 		if (baseBlock instanceof SignBlock)
 		{
 			block = getBlock();

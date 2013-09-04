@@ -26,12 +26,10 @@ import castro.connector.CConnector;
 public abstract class CBlock
 {
 	public Location loc;
-	public int id;
 	
-	public CBlock(Location loc, int id)
+	public CBlock(Location loc)
 	{
 		this.loc = loc;
-		this.id = id;
 	}
 	
 	
@@ -47,11 +45,5 @@ public abstract class CBlock
 	public Block getBlock()
 	{
 		return loc.getWorld().getBlockAt(loc);
-	}
-	
-	
-	public int getId()
-	{
-		return id;
 	}
 }

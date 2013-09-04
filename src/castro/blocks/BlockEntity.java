@@ -32,7 +32,7 @@ public class BlockEntity extends CBlock
 	
 	public BlockEntity(LocalEntity entity, Vector pos)
 	{
-		super(new Location(CWorldBuilder.commandWorld, pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()), -1);
+		super(new Location(CWorldBuilder.commandWorld, pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()));
 		this.entity = entity;
 		this.pos = pos;
 	}

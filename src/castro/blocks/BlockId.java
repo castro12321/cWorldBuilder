@@ -22,9 +22,12 @@ import org.bukkit.block.Block;
 
 public class BlockId extends CBlock
 {
+	public int id;
+	
 	public BlockId(Location loc, int id)
 	{
-		super(loc, id);
+		super(loc);
+		this.id = id;
 	}
 	
 	@Override
