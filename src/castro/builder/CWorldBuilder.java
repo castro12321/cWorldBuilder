@@ -19,12 +19,10 @@ package castro.builder;
 
 import java.util.ArrayDeque;
 import java.util.HashMap;
-import java.util.NoSuchElementException;
 import java.util.Queue;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import castro.base.plugin.CPlugin;
@@ -102,18 +100,18 @@ public class CWorldBuilder extends CPlugin implements Runnable
 	@Override
 	public void run()
 	{
-		//run_impl();
-		/**/
-		long start = System.currentTimeMillis();	
+		Queue<BlockQueue> currentQueues = getNextQueues();
+		if(currentQueues == null)
+			return;
 		
-		while(System.currentTimeMillis() - start < 15)
-		{
-			//reset();
-			if(!run_impl())
-				return;
-			//timeStep("100 blocks");
-		}
-		/**/
+		BlockQueue queue = currentQueues.peek();
+		CWBWorlds.loadChunksForWorld(queue.player.getWorld().getName());
+		executePlayer = queue.player;
+		
+		queue.execute();
+		
+		if(queue.isEmpty())
+			currentQueues.remove();
 	}
 	
 	
@@ -125,39 +123,6 @@ public class CWorldBuilder extends CPlugin implements Runnable
 			else
 				return lqueues;
 		return queues;
-	}
-	
-	private boolean run_impl()
-	{
-		Queue<BlockQueue> currentQueues = getNextQueues();
-		if(currentQueues == null)
-			return false;
-		
-		BlockQueue queue = currentQueues.peek();
-		CWBWorlds.loadChunksForWorld(queue.player.getWorld().getName());
-		executePlayer = queue.player;
-		try
-		{
-			for(int i = 0; i < 100; ++i)
-			{
-				CBlock block = queue.queue.remove();
-				Block b = block.getBlock();
-				
-				if(!CWBWorlds.loadChunk(b))
-					continue;
-				
-				if(!queue.omitPerm)
-					if(!block.canBuild(b))
-						continue;
-				
-				block.execute(b);
-			}
-		} catch(NoSuchElementException e) {}
-		
-		if(queue.queue.isEmpty())
-			currentQueues.remove();
-		
-		return true;
 	}
 	
 	

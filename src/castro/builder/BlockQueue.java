@@ -18,8 +18,10 @@
 package castro.builder;
 
 import java.util.ArrayDeque;
+import java.util.NoSuchElementException;
 import java.util.Queue;
 
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import castro.blocks.CBlock;
@@ -41,5 +43,46 @@ public class BlockQueue
 		{
 			omitPerm = cplayer.omitPerm;
 		}
+	}
+	
+	
+	public void execute()
+	{
+		long start = System.currentTimeMillis();	
+		
+		while(System.currentTimeMillis() - start < 15)
+		{
+			if(!execute100())
+				return;
+		}
+	}
+	
+	
+	private boolean execute100()
+	{
+		try
+		{
+			for(int i = 0; i < 100; ++i)
+			{
+				CBlock block = queue.remove();
+				Block b = block.getBlock();
+				
+				if(!CWBWorlds.loadChunk(b))
+					continue;
+				
+				if(!omitPerm)
+					if(!block.canBuild(b))
+						continue;
+				
+				block.execute(b);
+			}
+		} catch(NoSuchElementException e) { return false; }
+		return true;
+	}
+	
+	
+	public boolean isEmpty()
+	{
+		return queue.isEmpty();
 	}
 }
