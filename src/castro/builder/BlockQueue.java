@@ -25,6 +25,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import castro.blocks.CBlock;
+import castro.connector.CConnector;
 
 public class BlockQueue
 {
@@ -48,7 +49,9 @@ public class BlockQueue
 	
 	public void execute()
 	{
-		long start = System.currentTimeMillis();	
+		long start = System.currentTimeMillis();
+		
+		CWBWorlds.loadChunksForWorld(player.getWorld().getName());
 		
 		while(System.currentTimeMillis() - start < 15)
 		{
@@ -71,7 +74,7 @@ public class BlockQueue
 					continue;
 				
 				if(!omitPerm)
-					if(!block.canBuild(b))
+					if(!canBuild(b))
 						continue;
 				
 				block.execute(b);
@@ -84,5 +87,11 @@ public class BlockQueue
 	public boolean isEmpty()
 	{
 		return queue.isEmpty();
+	}
+	
+	
+	public boolean canBuild(Block block)
+	{
+		return CConnector.worldguard.canBuild(player, block);
 	}
 }

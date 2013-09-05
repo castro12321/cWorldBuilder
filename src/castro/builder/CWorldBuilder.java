@@ -39,11 +39,11 @@ public class CWorldBuilder extends CPlugin implements Runnable
 	public static Player commandPlayer;
 	public static World  commandWorld;
 	
-	public static Player executePlayer; // current player while executing run()
+	//public static Player executePlayer; // current player while executing run()
 	public static HashMap<String, CWBPlayer> players = new HashMap<>();
 	
-	public static Queue<BlockQueue>  queues = new ArrayDeque<BlockQueue>();
-	public static Queue<BlockQueue> lqueues = new ArrayDeque<BlockQueue>();
+	private static Queue<BlockQueue>  queues = new ArrayDeque<BlockQueue>();
+	private static Queue<BlockQueue> lqueues = new ArrayDeque<BlockQueue>();
 	public static BlockQueue lastQueue; // for adding
 	
 	
@@ -105,11 +105,7 @@ public class CWorldBuilder extends CPlugin implements Runnable
 			return;
 		
 		BlockQueue queue = currentQueues.peek();
-		CWBWorlds.loadChunksForWorld(queue.player.getWorld().getName());
-		executePlayer = queue.player;
-		
 		queue.execute();
-		
 		if(queue.isEmpty())
 			currentQueues.remove();
 	}

@@ -20,9 +20,6 @@ package castro.blocks;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 
-import castro.builder.CWorldBuilder;
-import castro.connector.CConnector;
-
 public abstract class CBlock
 {
 	public Location loc;
@@ -34,12 +31,6 @@ public abstract class CBlock
 	
 	
 	public abstract void execute(Block block);
-	
-	
-	public boolean canBuild(Block block)
-	{
-		return CConnector.worldguard.canBuild(CWorldBuilder.executePlayer, block);
-	}
 	
 	
 	public Block getBlock()
