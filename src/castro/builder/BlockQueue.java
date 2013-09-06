@@ -21,9 +21,13 @@ import java.util.ArrayDeque;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
+import castro.blocks.BlockData;
+import castro.blocks.BlockId;
+import castro.blocks.BlockIdAndData;
 import castro.blocks.CBlock;
 import castro.connector.CConnector;
 
@@ -93,5 +97,23 @@ public class BlockQueue
 	public boolean canBuild(Block block)
 	{
 		return CConnector.worldguard.canBuild(player, block);
+	}
+	
+	
+	public void addBlock(byte data, Location loc)
+	{
+		queue.add(new BlockData(loc, data));
+	}
+	public void addBlock(int id, Location loc)
+	{
+		queue.add(new BlockId(loc, id));
+	}
+	public void addBlock(int id, byte data, Location loc)
+	{
+		queue.add(new BlockIdAndData(loc, id, data));
+	}
+	public void addBlock(CBlock block)
+	{
+		queue.add(block);
 	}
 }

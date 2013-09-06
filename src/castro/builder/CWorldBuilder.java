@@ -27,7 +27,6 @@ import org.bukkit.entity.Player;
 
 import castro.base.plugin.CPlugin;
 import castro.base.plugin.CPluginSettings;
-import castro.blocks.CBlock;
 
 import com.sk89q.worldedit.Vector;
 
@@ -66,6 +65,7 @@ public class CWorldBuilder extends CPlugin implements Runnable
 	}
 	
 	
+	/*
 	public static void addBlock(CBlock b)
 	{
 		if(lastQueue == null)
@@ -73,6 +73,7 @@ public class CWorldBuilder extends CPlugin implements Runnable
 		
 		lastQueue.queue.add(b);
 	}
+	*/
 	
 	
 	public static void flush()
