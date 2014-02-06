@@ -23,6 +23,8 @@ import java.util.Queue;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import castro.base.plugin.CPlugin;
@@ -35,6 +37,7 @@ import com.sk89q.worldedit.Vector;
 public class CWorldBuilder extends CPlugin implements Runnable
 {
 	private static CWorldBuilder instance;
+	private static CommandMgr    commandMgr;
 	
 	public static Player commandPlayer;
 	public static World  commandWorld;
@@ -136,7 +139,6 @@ public class CWorldBuilder extends CPlugin implements Runnable
 		instance = this;
 		
 		CPluginSettings settings = new CPluginSettings();
-		settings.commandMgr = new CommandMgr();
 		return settings;
 	}
 	
@@ -144,8 +146,17 @@ public class CWorldBuilder extends CPlugin implements Runnable
 	@Override
 	protected void init()
 	{
+		commandMgr = new CommandMgr();
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, this, 1, 1); // schedule run to run every tick
 	}
+	
+	
+	@Override
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
+	{
+		return commandMgr.onCommand(sender, cmd, args);
+	}
+	
 	
 	
 	public static CWorldBuilder get()
