@@ -33,6 +33,6 @@ public class BlockData extends CBlock
 	@Override
 	public void execute(Block block)
 	{
-		block.setData(data, true);
+		block.setData(data, false);
 	}
 }

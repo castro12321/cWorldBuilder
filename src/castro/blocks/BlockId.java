@@ -33,6 +33,6 @@ public class BlockId extends CBlock
 	@Override
 	public void execute(Block block)
 	{
-		block.setTypeId(id, true);
+		block.setTypeId(id, false);
 	}
 }
