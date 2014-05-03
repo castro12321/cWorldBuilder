@@ -38,7 +38,7 @@ public class BlockBase extends CBlock
 	@Override
 	public void execute(Block block)
 	{
-		block.setTypeIdAndData(baseBlock.getId(), (byte)baseBlock.getData(), false);
+		block.setTypeIdAndData(baseBlock.getId(), (byte)baseBlock.getData(), true);
 		
 		// If it is special block, then we have to perform additional operations
 		if (baseBlock instanceof SignBlock)
