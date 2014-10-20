@@ -17,100 +17,23 @@
 
 package castro.builder;
 
-import java.util.HashMap;
-
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.world.WorldUnloadEvent;
 
+import castro.cBorder.Border;
+import castro.cBorder.BorderMgr;
 
-class CWBWorld
+public class CWBWorlds
 {
-	private static final int SIZE = 100;
-	private static final int HALF_SIZE = 50;
-	public boolean[][] lockedChunks;
-	
-	
-	public CWBWorld()
+	public static void loadChunk(Block block)
 	{
-		this.lockedChunks = new boolean[SIZE][SIZE];
+		loadChunk(block.getWorld(), block.getX() >> 4, block.getZ() >> 4);
 	}
-	
-	
-	public boolean isLocked(int x, int z)
+	public static void loadChunk(World world, int x, int z)
 	{
-		try
-		{
-			return lockedChunks[HALF_SIZE+x][HALF_SIZE+z];
-		}
-		catch(ArrayIndexOutOfBoundsException e)
-		{
-			return false;
-		}
-	}
-	
-	
-	public void lock(int x, int z)
-	{
-		try
-		{
-			lockedChunks[HALF_SIZE+x][HALF_SIZE+z] = true;
-		}
-		catch(IndexOutOfBoundsException e)
-		{
-		}
-	}
-}
-
-
-public class CWBWorlds implements Listener
-{
-	private static HashMap<String, CWBWorld> worlds = new HashMap<>();
-	private static CWBWorld cWorld;
-	
-	
-	@EventHandler
-	public void onWorldUnload(WorldUnloadEvent event)
-	{
-		worlds.remove(event.getWorld().getName());
-	}
-	
-	
-	public static void loadChunksForWorld(String worldname)
-	{
-		cWorld = worlds.get(worldname);
-		if(cWorld == null)
-		{
-			cWorld = new CWBWorld();
-			worlds.put(worldname, cWorld);
-		}
-	}
-	
-	
-	public static boolean isLocked(int x, int z)
-	{
-		return cWorld.isLocked(x, z);
-	}
-	
-	
-	public static boolean loadChunk(Block block)
-	{
-		return loadChunk(block.getWorld(), block.getX() >> 4, block.getZ() >> 4);
-	}
-	public static boolean loadChunk(World world, int x, int z)
-	{
-		if(isLocked(x, z))
-			return false;
-		
+	    Border border = BorderMgr.getBorder(world);
+	    if(border.isOutsideLimit(x, z))
+	        throw new IndexOutOfBoundsException("This chunk is outside world border");
 		world.loadChunk(x, z); // Try to load the chunk
-		if(!world.isChunkLoaded(x, z)) // If chunk is still not loaded, add to limited chunks in order not to load it again
-		{
-			cWorld.lock(x, z);
-			return false;
-		}
-		
-		return true;
 	}
 }

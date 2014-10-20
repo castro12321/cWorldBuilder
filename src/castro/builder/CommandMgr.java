@@ -25,22 +25,13 @@ import castro.base.GenericCommandMgr;
 
 public class CommandMgr implements GenericCommandMgr
 {
-	CWorldBuilder plugin = CWorldBuilder.get();
+	private CWorldBuilder plugin = CWorldBuilder.get();
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String[] args)
 	{
 		if(!command.getName().equals("cwb"))
 			return true;
-		
-		String name = sender.getName();
-		CWBPlayer player = CWorldBuilder.players.get(name);
-		
-		if(player == null)
-		{
-			player = new CWBPlayer(name);
-			CWorldBuilder.players.put(name, player);
-		}
 		
 		for(String arg : args)
 		{
@@ -51,17 +42,7 @@ public class CommandMgr implements GenericCommandMgr
 					plugin.sendMessage(sender, "Zatrzymales swoja kolejke.");
 					return true;
 				}
-			
-			if(arg.equals("-d")) player.omitPerm = false;
-			
-			if(sender.hasPermission("aliquam.mod"))
-			{
-				if(arg.equals("-p")) player.omitPerm = true;
-			}
 		}
-		
-		plugin.sendMessage(sender, "Twoje obecne flagi to:");
-		plugin.sendMessage(sender, "-p = " + player.omitPerm);
 		
 		return true;
 	}

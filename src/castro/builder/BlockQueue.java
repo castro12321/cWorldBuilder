@@ -33,29 +33,20 @@ import castro.connector.CConnector;
 
 public class BlockQueue
 {
-	//public Queue<CBlock> queue = new LinkedList<>();
 	public Queue<CBlock> queue = new ArrayDeque<CBlock>(50000);
 	
-	public Player player;
-	public boolean omitPerm = false;
+	public final Player player;
+	public final boolean omitPerm;
 	
 	public BlockQueue(Player player)
 	{
 		this.player = player;
-		
-		CWBPlayer cplayer = CWorldBuilder.players.get(player.getName());
-		if(cplayer != null)
-		{
-			omitPerm = cplayer.omitPerm;
-		}
+		omitPerm = player.hasPermission("aliquam.admin");
 	}
-	
 	
 	public void execute()
 	{
 		long start = System.currentTimeMillis();
-		
-		CWBWorlds.loadChunksForWorld(player.getWorld().getName());
 		
 		while(System.currentTimeMillis() - start < 15)
 		{
@@ -63,7 +54,6 @@ public class BlockQueue
 				return;
 		}
 	}
-	
 	
 	private boolean execute100()
 	{
@@ -74,8 +64,15 @@ public class BlockQueue
 				CBlock block = queue.remove();
 				Block b = block.getBlock();
 				
-				if(!CWBWorlds.loadChunk(b))
-					continue;
+				try
+				{
+				    CWBWorlds.loadChunk(b);
+				}
+				catch(IndexOutOfBoundsException e)
+				{
+				    queue.clear();
+				    return false;
+				}
 				
 				if(!omitPerm)
 					if(!canBuild(b))
@@ -83,7 +80,11 @@ public class BlockQueue
 				
 				block.execute(b);
 			}
-		} catch(NoSuchElementException e) { return false; }
+		}
+		catch (NoSuchElementException e)
+		{
+            return false;
+        }
 		return true;
 	}
 	

@@ -18,7 +18,6 @@
 package castro.builder;
 
 import java.util.ArrayDeque;
-import java.util.HashMap;
 import java.util.Queue;
 
 import org.bukkit.Location;
@@ -42,11 +41,8 @@ public class CWorldBuilder extends CPlugin implements Runnable
 	public static Player commandPlayer;
 	public static World  commandWorld;
 	
-	//public static Player executePlayer; // current player while executing run()
-	public static HashMap<String, CWBPlayer> players = new HashMap<>();
-	
-	private static Queue<BlockQueue>  queues = new ArrayDeque<BlockQueue>();
-	private static Queue<BlockQueue> lqueues = new ArrayDeque<BlockQueue>();
+	private static Queue<BlockQueue>  queues = new ArrayDeque<BlockQueue>(); // Queues for small operations (less than 100k blocks)
+	private static Queue<BlockQueue> lqueues = new ArrayDeque<BlockQueue>(); // Queues for large operations (>100k blocks)
 	public static BlockQueue lastQueue; // for adding
 	
 	
@@ -60,14 +56,11 @@ public class CWorldBuilder extends CPlugin implements Runnable
 		for(BlockQueue q :  queues) if(eq(q.player, p)) { if(message) sendMsg(p); return false; }
 		for(BlockQueue q : lqueues) if(eq(q.player, p)) { if(message) sendMsg(p); return false; }
 		
-		CWBWorlds.loadChunksForWorld(p.getWorld().getName());
-		
 		commandPlayer = p;
 		commandWorld  = p.getWorld();
 		lastQueue = new BlockQueue(p);
 		return true;
 	}
-	
 	
 	/**/
 	public static void addBlock(CBlock b)
@@ -79,7 +72,6 @@ public class CWorldBuilder extends CPlugin implements Runnable
 	}
 	/**/
 	
-	
 	public static void flush()
 	{
 		// Add last queue to appropriate queues list
@@ -87,20 +79,18 @@ public class CWorldBuilder extends CPlugin implements Runnable
 			return;
 		
 		if(lastQueue.queue.size() > 0)
-			if(lastQueue.queue.size() > 50000)
+			if(lastQueue.queue.size() > 100000)
 				lqueues.add(lastQueue);
 			else
 				queues.add(lastQueue);
 		lastQueue = null;
 	}
 	
-	
 	public static void remove(Player p)
 	{
 		for(BlockQueue q :  queues) if(eq(q.player, p)) {  queues.remove(q); return; }
 		for(BlockQueue q : lqueues) if(eq(q.player, p)) { lqueues.remove(q); return; }
 	}
-	
 	
 	@Override
 	public void run()
@@ -115,7 +105,6 @@ public class CWorldBuilder extends CPlugin implements Runnable
 			currentQueues.remove();
 	}
 	
-	
 	private Queue<BlockQueue> getNextQueues()
 	{
 		if(queues.isEmpty())
@@ -126,12 +115,10 @@ public class CWorldBuilder extends CPlugin implements Runnable
 		return queues;
 	}
 	
-	
 	public static Location getLocation(World world, Vector pt)
 	{
 		return new Location(world, pt.getBlockX(), pt.getBlockY(), pt.getBlockZ());
 	}
-	
 	
 	@Override
 	protected CPluginSettings getSettings()
@@ -142,7 +129,6 @@ public class CWorldBuilder extends CPlugin implements Runnable
 		return settings;
 	}
 	
-	
 	@Override
 	protected void init()
 	{
@@ -150,14 +136,11 @@ public class CWorldBuilder extends CPlugin implements Runnable
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, this, 1, 1); // schedule run to run every tick
 	}
 	
-	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
 	{
 		return commandMgr.onCommand(sender, cmd, args);
 	}
-	
-	
 	
 	public static CWorldBuilder get()
 	{
