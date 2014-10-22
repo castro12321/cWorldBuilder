@@ -29,6 +29,8 @@ import castro.blocks.BlockData;
 import castro.blocks.BlockId;
 import castro.blocks.BlockIdAndData;
 import castro.blocks.CBlock;
+import castro.cWorlds.Utils.MemberType;
+import castro.cWorlds.plots.PlotsMgr;
 import castro.connector.CConnector;
 
 public class BlockQueue
@@ -41,7 +43,9 @@ public class BlockQueue
 	public BlockQueue(Player player)
 	{
 		this.player = player;
-		omitPerm = player.hasPermission("aliquam.admin");
+		omitPerm = 
+		        player.hasPermission("aliquam.admin")
+		     || PlotsMgr.get(player.getWorld()).is(player, MemberType.MEMBER);
 	}
 	
 	public void execute()
@@ -59,11 +63,13 @@ public class BlockQueue
 	{
 		try
 		{
+		    //long cps = System.currentTimeMillis();
+		    
 			for(int i = 0; i < 100; ++i)
 			{
-				CBlock block = queue.remove();
+			    CBlock block = queue.remove();
 				Block b = block.getBlock();
-				
+				/*
 				try
 				{
 				    CWBWorlds.loadChunk(b);
@@ -73,13 +79,20 @@ public class BlockQueue
 				    queue.clear();
 				    return false;
 				}
+				*/
 				
-				if(!omitPerm)
-					if(!canBuild(b))
-						continue;
-				
+				if(i == 0)
+				    if(!omitPerm)
+				        if(!canBuild(b))
+				        {
+				            queue.clear();
+				            return false;
+				        }
 				block.execute(b);
 			}
+			
+			//long cpe = System.currentTimeMillis();
+			//CWorldBuilder.get().log("exec100: " + (cpe-cps) + "ms");
 		}
 		catch (NoSuchElementException e)
 		{
