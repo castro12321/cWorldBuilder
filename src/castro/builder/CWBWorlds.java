@@ -17,11 +17,9 @@
 
 package castro.builder;
 
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-
-import castro.cBorder.Border;
-import castro.cBorder.BorderMgr;
 
 public class CWBWorlds
 {
@@ -31,9 +29,22 @@ public class CWBWorlds
 	}
 	public static void loadChunk(World world, int x, int z)
 	{
-	    Border border = BorderMgr.getBorder(world);
-	    if(border.isOutsideLimit(x, z))
+	    if(CWorldBuilder.commandBorder.isOutsideLimit(x, z))
 	        throw new IndexOutOfBoundsException("This chunk is outside world border");
 		world.loadChunk(x, z); // Try to load the chunk
+	}
+	
+	public static Block getBlockAt(Location location)
+	{
+	    if(CWorldBuilder.commandBorder.isOutsideLimit(location.getBlockX() >> 4, location.getBlockZ() >> 4))
+	        throw new IndexOutOfBoundsException("This chunk is outside world border");
+	    return location.getBlock();
+	}
+	
+	public static Block getBlockAt(World world, int x, int y, int z)
+	{
+	    if(CWorldBuilder.commandBorder.isOutsideLimit(x >> 4, z >> 4))
+            throw new IndexOutOfBoundsException("This chunk is outside world border");
+        return world.getBlockAt(x, y, z);
 	}
 }

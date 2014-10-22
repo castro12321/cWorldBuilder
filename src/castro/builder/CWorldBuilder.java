@@ -29,6 +29,8 @@ import org.bukkit.entity.Player;
 import castro.base.plugin.CPlugin;
 import castro.base.plugin.CPluginSettings;
 import castro.blocks.CBlock;
+import castro.cBorder.Border;
+import castro.cBorder.BorderMgr;
 
 import com.sk89q.worldedit.Vector;
 
@@ -40,6 +42,7 @@ public class CWorldBuilder extends CPlugin implements Runnable
 	
 	public static Player commandPlayer;
 	public static World  commandWorld;
+	public static Border commandBorder;
 	
 	private static Queue<BlockQueue>  queues = new ArrayDeque<BlockQueue>(); // Queues for small operations (less than 100k blocks)
 	private static Queue<BlockQueue> lqueues = new ArrayDeque<BlockQueue>(); // Queues for large operations (>100k blocks)
@@ -58,6 +61,7 @@ public class CWorldBuilder extends CPlugin implements Runnable
 		
 		commandPlayer = p;
 		commandWorld  = p.getWorld();
+		commandBorder = BorderMgr.getBorder(commandWorld);
 		lastQueue = new BlockQueue(p);
 		return true;
 	}
