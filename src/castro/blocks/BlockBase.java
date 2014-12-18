@@ -1,33 +1,66 @@
 /* cWorldBuilder
  * Copyright (C) 2013 Norbert Kawinski (norbert.kawinski@gmail.com)
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
  */
 
 package castro.blocks;
 
+import java.lang.reflect.Method;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import net.minecraft.server.v1_8_R1.BlockPosition;
+import net.minecraft.server.v1_8_R1.NBTBase;
+import net.minecraft.server.v1_8_R1.NBTTagByte;
+import net.minecraft.server.v1_8_R1.NBTTagByteArray;
+import net.minecraft.server.v1_8_R1.NBTTagCompound;
+import net.minecraft.server.v1_8_R1.NBTTagDouble;
+import net.minecraft.server.v1_8_R1.NBTTagFloat;
+import net.minecraft.server.v1_8_R1.NBTTagInt;
+import net.minecraft.server.v1_8_R1.NBTTagIntArray;
+import net.minecraft.server.v1_8_R1.NBTTagList;
+import net.minecraft.server.v1_8_R1.NBTTagLong;
+import net.minecraft.server.v1_8_R1.NBTTagShort;
+import net.minecraft.server.v1_8_R1.NBTTagString;
+import net.minecraft.server.v1_8_R1.TileEntity;
+
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Sign;
+import org.bukkit.craftbukkit.v1_8_R1.CraftWorld;
 
+import com.google.common.base.Preconditions;
+import com.sk89q.jnbt.ByteArrayTag;
+import com.sk89q.jnbt.ByteTag;
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.DoubleTag;
+import com.sk89q.jnbt.EndTag;
+import com.sk89q.jnbt.FloatTag;
+import com.sk89q.jnbt.IntArrayTag;
+import com.sk89q.jnbt.IntTag;
+import com.sk89q.jnbt.ListTag;
+import com.sk89q.jnbt.LongTag;
+import com.sk89q.jnbt.ShortTag;
+import com.sk89q.jnbt.StringTag;
+import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.blocks.SignBlock;
 
 public class BlockBase extends CBlock
 {
 	BaseBlock baseBlock;
+	private static Method nbtCreateTagMethod;
+	static
+	{
+		try
+        {
+	        nbtCreateTagMethod = NBTBase.class.getDeclaredMethod("createTag", new Class[] { Byte.TYPE });
+        }
+        catch(NoSuchMethodException | SecurityException e)
+        {
+	        e.printStackTrace();
+        }
+	    nbtCreateTagMethod.setAccessible(true);
+	}
 	
 	public BlockBase(Location loc, BaseBlock baseBlock)
 	{
@@ -35,26 +68,94 @@ public class BlockBase extends CBlock
 		this.baseBlock = baseBlock;
 	}
 	
+	
 	@Override
-	public void execute(Block block)
+	public void execute(Block block_unused)
 	{
-		block.setTypeIdAndData(baseBlock.getId(), (byte)baseBlock.getData(), true);
+		Preconditions.checkNotNull(loc);
+		Preconditions.checkNotNull(baseBlock);
 		
-		// If it is special block, then we have to perform additional operations
-		if (baseBlock instanceof SignBlock)
+		CraftWorld craftWorld = (CraftWorld) loc.getWorld();
+		int x = loc.getBlockX();
+		int y = loc.getBlockY();
+		int z = loc.getBlockZ();
+		
+		boolean changed = loc.getBlock().setTypeIdAndData(baseBlock.getId(), (byte) baseBlock.getData(), true);
+		
+		CompoundTag nativeTag = baseBlock.getNbtData();
+		if(nativeTag != null)
 		{
-			block = getBlock();
-			String[] text = ((SignBlock)baseBlock).getText();
-			BlockState state = block.getState();
-			if (state == null || !(state instanceof Sign)) return;
-			Sign sign = (Sign)state;
-			sign.setLine(0, text[0]);
-			sign.setLine(1, text[1]);
-			sign.setLine(2, text[2]);
-			sign.setLine(3, text[3]);
-			sign.update();
-			return;
+			TileEntity tileEntity = craftWorld.getHandle().getTileEntity(new BlockPosition(x, y, z));
+			if(tileEntity != null)
+			{
+				NBTTagCompound tag = (NBTTagCompound) fromNative(nativeTag);
+				tag.set("x", new NBTTagInt(x));
+				tag.set("y", new NBTTagInt(y));
+				tag.set("z", new NBTTagInt(z));
+				readTagIntoTileEntity(tag, tileEntity);
+			}
 		}
-		//if(block instanceof Furnace) ... Moze kiedys to zrobie :D
+	}
+	
+	
+	private static void readTagIntoTileEntity(NBTTagCompound tag, TileEntity tileEntity)
+	{
+		tileEntity.a(tag);
+	}
+	
+	
+	private NBTBase fromNative(Tag foreign)
+	{
+		if(foreign == null)
+			return null;
+		Map.Entry<String, Tag> entry;
+		if((foreign instanceof CompoundTag))
+		{
+			NBTTagCompound tag = new NBTTagCompound();
+			for(Iterator<Entry<String, Tag>> localIterator = ((CompoundTag) foreign).getValue().entrySet().iterator(); localIterator.hasNext();)
+			{
+				entry = (Entry<String, Tag>) localIterator.next();
+				tag.set((String) entry.getKey(), fromNative((Tag) entry.getValue()));
+			}
+			return tag;
+		}
+		if((foreign instanceof ByteTag))
+			return new NBTTagByte(((ByteTag) foreign).getValue().byteValue());
+		if((foreign instanceof ByteArrayTag))
+			return new NBTTagByteArray(((ByteArrayTag) foreign).getValue());
+		if((foreign instanceof DoubleTag))
+			return new NBTTagDouble(((DoubleTag) foreign).getValue().doubleValue());
+		if((foreign instanceof FloatTag))
+			return new NBTTagFloat(((FloatTag) foreign).getValue().floatValue());
+		if((foreign instanceof IntTag))
+			return new NBTTagInt(((IntTag) foreign).getValue().intValue());
+		if((foreign instanceof IntArrayTag))
+			return new NBTTagIntArray(((IntArrayTag) foreign).getValue());
+		if((foreign instanceof ListTag))
+		{
+			NBTTagList tag = new NBTTagList();
+			ListTag foreignList = (ListTag) foreign;
+			for(Tag t : foreignList.getValue())
+				tag.add(fromNative(t));
+			return tag;
+		}
+		if((foreign instanceof LongTag))
+			return new NBTTagLong(((LongTag) foreign).getValue().longValue());
+		if((foreign instanceof ShortTag))
+			return new NBTTagShort(((ShortTag) foreign).getValue().shortValue());
+		if((foreign instanceof StringTag))
+			return new NBTTagString(((StringTag) foreign).getValue());
+		if((foreign instanceof EndTag))
+		{
+			try
+			{
+				return (NBTBase) this.nbtCreateTagMethod.invoke(null, new Object[] { Byte.valueOf((byte) 0) });
+			}
+			catch(Exception e)
+			{
+				return null;
+			}
+		}
+		throw new IllegalArgumentException("Don't know how to make NMS " + foreign.getClass().getCanonicalName());
 	}
 }
