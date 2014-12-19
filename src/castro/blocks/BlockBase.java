@@ -29,7 +29,6 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R1.CraftWorld;
 
-import com.google.common.base.Preconditions;
 import com.sk89q.jnbt.ByteArrayTag;
 import com.sk89q.jnbt.ByteTag;
 import com.sk89q.jnbt.CompoundTag;
@@ -72,19 +71,19 @@ public class BlockBase extends CBlock
 	@Override
 	public void execute(Block block_unused)
 	{
-		Preconditions.checkNotNull(loc);
-		Preconditions.checkNotNull(baseBlock);
+		//Preconditions.checkNotNull(loc);
+		//Preconditions.checkNotNull(baseBlock);
 		
-		CraftWorld craftWorld = (CraftWorld) loc.getWorld();
-		int x = loc.getBlockX();
-		int y = loc.getBlockY();
-		int z = loc.getBlockZ();
-		
-		boolean changed = loc.getBlock().setTypeIdAndData(baseBlock.getId(), (byte) baseBlock.getData(), true);
+		loc.getBlock().setTypeIdAndData(baseBlock.getId(), (byte)baseBlock.getData(), true);
 		
 		CompoundTag nativeTag = baseBlock.getNbtData();
 		if(nativeTag != null)
 		{
+			CraftWorld craftWorld = (CraftWorld) loc.getWorld();
+			int x = loc.getBlockX();
+			int y = loc.getBlockY();
+			int z = loc.getBlockZ();
+			
 			TileEntity tileEntity = craftWorld.getHandle().getTileEntity(new BlockPosition(x, y, z));
 			if(tileEntity != null)
 			{
@@ -149,7 +148,7 @@ public class BlockBase extends CBlock
 		{
 			try
 			{
-				return (NBTBase) this.nbtCreateTagMethod.invoke(null, new Object[] { Byte.valueOf((byte) 0) });
+				return (NBTBase) nbtCreateTagMethod.invoke(null, new Object[] { Byte.valueOf((byte) 0) });
 			}
 			catch(Exception e)
 			{
