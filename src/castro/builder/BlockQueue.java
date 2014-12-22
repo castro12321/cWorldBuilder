@@ -17,8 +17,8 @@ import castro.blocks.BlockData;
 import castro.blocks.BlockId;
 import castro.blocks.BlockIdAndData;
 import castro.blocks.CBlock;
-import castro.cWorlds.Utils.MemberType;
-import castro.cWorlds.plots.PlotsMgr;
+import castro.cWorlds.MemberType;
+import castro.cWorlds.PlotsMgr;
 import castro.connector.CConnector;
 
 public class BlockQueue
