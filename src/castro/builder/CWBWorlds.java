@@ -18,21 +18,26 @@ public class CWBWorlds
 	
 	public static void loadChunk(World world, int chunkX, int chunkZ)
 	{
-	    if(CWorldBuilder.commandBorder.isOutsideLimit(chunkX, chunkZ))
+		int minX = chunkX * 16;
+		int maxX = minX + 16;
+		int minZ = chunkZ * 16;
+		int maxZ = minZ + 16;
+	    if(CWorldBuilder.commandBorder.isOutside(minX, minZ)
+	    || CWorldBuilder.commandBorder.isOutside(maxX, maxZ))
 	        throw new IndexOutOfBoundsException("This chunk is outside world border");
 		world.loadChunk(chunkX, chunkZ); // Try to load the chunk
 	}
 	
 	public static Block getBlockAt(Location location)
 	{
-	    if(CWorldBuilder.commandBorder.isOutsideLimit(location.getBlockX() >> 4, location.getBlockZ() >> 4))
+	    if(CWorldBuilder.commandBorder.isOutside(location.getBlockX(), location.getBlockZ()))
 	        throw new IndexOutOfBoundsException("This chunk is outside world border");
 	    return location.getBlock();
 	}
 	
 	public static Block getBlockAt(World world, int x, int y, int z)
 	{
-	    if(CWorldBuilder.commandBorder.isOutsideLimit(x >> 4, z >> 4))
+	    if(CWorldBuilder.commandBorder.isOutside(x, z))
             throw new IndexOutOfBoundsException("This chunk is outside world border");
         return world.getBlockAt(x, y, z);
 	}

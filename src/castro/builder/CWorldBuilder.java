@@ -51,7 +51,7 @@ public class CWorldBuilder extends CPlugin implements Runnable
 		
 		commandPlayer = p;
 		commandWorld  = p.getWorld();
-		commandBorder = BorderMgr.getBorder(commandWorld);
+		commandBorder = BorderMgr.getNewBorder(commandWorld);
 		lastQueue = new BlockQueue(p);
 		return true;
 	}
