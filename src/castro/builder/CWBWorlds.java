@@ -23,7 +23,9 @@ public class CWBWorlds
 		int minZ = chunkZ * 16;
 		int maxZ = minZ + 16;
 	    if(CWorldBuilder.commandBorder.isOutside(minX, minZ)
-	    || CWorldBuilder.commandBorder.isOutside(maxX, maxZ))
+	    && CWorldBuilder.commandBorder.isOutside(maxX, maxZ)
+	    && CWorldBuilder.commandBorder.isOutside(minX, maxZ)
+	    && CWorldBuilder.commandBorder.isOutside(maxX, minZ))
 	        throw new IndexOutOfBoundsException("This chunk is outside world border");
 		world.loadChunk(chunkX, chunkZ); // Try to load the chunk
 	}
