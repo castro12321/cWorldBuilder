@@ -57,10 +57,24 @@ public class CWorldBuilder extends CPlugin implements Runnable
 	}
 	
 	/**/
-	public static void addBlock(CBlock b)
+	public static void addBlock(CBlock b) throws OperationMaxTimeExceeded, OutOfBorderOperationException
 	{
+		if(TimeoutThread.timeout)
+		{
+			instance.sendMessage(commandPlayer, "The server is under heavy load and your operation has been aborted. Sorry!");
+			instance.sendMessage(commandPlayer, "If the problem persists, please contact an administrator");
+			throw new OperationMaxTimeExceeded();
+		}
+		
 		if(lastQueue == null)
 			return;
+		
+		if(commandBorder.isOutside(b.loc))
+		{
+			instance.sendMessage(commandPlayer, "You have tried to use WorldEdit/VoxelSniper outside your plot border. The operation has been aborted.");
+			instance.sendMessage(commandPlayer, "If you think it's an error, please contact an administrator");
+			throw new OutOfBorderOperationException();
+		}
 		
 		lastQueue.queue.add(b);
 	}
